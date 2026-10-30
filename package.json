@@ -1,1 +1,32 @@
-{"name":"skillbridge","private":true,"type":"module","scripts":{"dev":"concurrently \"node --watch --env-file=.env server/index.js\" \"vite --host 127.0.0.1\"","build":"vite build","start":"node --env-file=.env server/index.js","db:setup":"node --env-file=.env server/setup.js","test":"node --test"},"dependencies":{"bcryptjs":"^3.0.2","cookie-parser":"^1.4.7","dotenv":"^17.2.3","express":"^5.1.0","express-rate-limit":"^8.2.1","helmet":"^8.1.0","mongodb":"^6.20.0","mysql2":"^3.15.3","react":"^19.2.0","react-dom":"^19.2.0","zod":"^4.1.12"},"devDependencies":{"concurrently":"^9.2.1","vite":"^7.1.12"}}
+{
+  "name": "skillbridge",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"node --watch --env-file=.env server/index.js\" \"vite --host 127.0.0.1\"",
+    "build": "vite build",
+    "start": "node --env-file=.env server/index.js",
+    "db:setup": "node --env-file=.env server/setup.js",
+    "test": "node --test",
+    "db:seed": "node --env-file=.env server/seed.js",
+    "demo:setup": "npm run db:setup && npm run db:seed",
+    "test:integration": "node --env-file=.env scripts/integration.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.1.0",
+    "mongodb": "^6.20.0",
+    "mysql2": "^3.15.3",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "vite": "^7.1.12"
+  }
+}

@@ -1,38 +1,48 @@
 # SkillBridge
 
-Local internship and mentorship application. React + Vite, Express, MySQL and MongoDB. Matching is deterministic and uses skill requirements; there is no AI integration.
+SkillBridge helps students explore internships and mentoring relationships. The web app uses React, Express, MySQL and MongoDB. Internship matching uses transparent skill rules; no AI or vector database is used.
 
-## Setup
+## Run the presentation demo
 
-1. Run MySQL Server (port 3306) and MongoDB (port 27017).
-2. Copy `.env.example` to `.env` if it does not already exist. Enter your MySQL username and password there. Do not commit this file.
-3. Run `npm install`.
-4. Run `npm run db:setup` to create the schema, seed the skill catalog, and initialize MongoDB collections.
-5. Run `npm run dev` and open http://127.0.0.1:5173. Use that exact hostname because mutation requests validate the origin.
-6. Register student and mentor accounts through the interface.
+Install Node.js LTS, MySQL Server 8 and MongoDB Community Server. Start MySQL on port 3306 and MongoDB on port 27017.
 
-For an administrator, register a normal account first, then use a trusted MySQL session to update its role to `admin` in the `users` table. Public registration deliberately cannot grant administrator permissions. Administrators can publish internship listings and review applications.
+```powershell
+npm ci
+Copy-Item .env.example .env
+```
+
+Set the local MySQL username and password in `.env`, then run:
+
+```powershell
+npm run demo:setup
+npm run build
+npm start
+```
+
+Open http://127.0.0.1:3001. Three fictional demo accounts are seeded: `student@skillbridge.demo`, `mentor@skillbridge.demo`, and `admin@skillbridge.demo`. Each uses `SkillBridgeDemo!26`. The sign-in page has buttons to populate these accounts. Seed setup is repeatable and leaves user-created data in place.
+
+Use `npm run dev` for development at http://127.0.0.1:5173. Keep `APP_ORIGIN` in `.env` aligned with the address in use. Do not expose this local app to a public network.
+
+## Presentation walkthrough
+
+The suggested 7 minute demo is in [docs/PRESENTATION.md](docs/PRESENTATION.md). The ER model, data dictionary, database operations and example queries are in [docs/DATABASE_DESIGN.md](docs/DATABASE_DESIGN.md). [docs/MOVING.md](docs/MOVING.md) explains how to move just the app or transfer both databases.
+
+## Data model
+
+MySQL holds users, profiles, skills, listings, application decisions and history, mentor relationships, availability, bookings, feedback and login sessions. Foreign keys, uniqueness rules, checked values and transactions preserve integrity.
+
+MongoDB holds flexible journal entries and session notes. SQL relationships and participant access are checked by the API before MongoDB records are read or changed. MongoDB IDs are not foreign keys into MySQL.
+
+The local `.env` file holds credentials and is excluded by Git. The sample database configuration is intended for local coursework. Use HTTPS and least-privilege database users for public deployment.
 
 ## Commands
 
-- `npm run dev`: frontend and API development servers
-- `npm run build`: production frontend build
-- `npm start`: API and built frontend; change APP_ORIGIN to http://127.0.0.1:3001 when serving this way
-- `npm test`: skill scoring and workflow unit tests
-- `npm run db:setup`: idempotent initial schema setup (not a migration system)
+- `npm run demo:setup` — create or upgrade schemas and seed fictional demonstration records
+- `npm run db:setup` — initialize MySQL and MongoDB
+- `npm run db:seed` — add missing demo data
+- `npm run build` — build the frontend
+- `npm start` — serve the production build and API together
+- `npm test` — matching and workflow unit checks
+- `npm run test:integration` — exercise the API and remove temporary test records
 
-## Implemented workflows
-
-Registration and cookie sessions; role-based authorization; profiles and proficiency; internship publishing, weighted matching, applications, decision history; mentor requests and acceptance; availability and transactional booking; shared MongoDB journals; aggregate reports.
-
-SQL owns users, skills, applications and scheduling. MongoDB owns journal documents. Journal access requires an accepted SQL mentorship and participant ownership. Booking locks the student and slot records; a unique slot constraint prevents duplicate booking and overlap checks prevent student conflicts. Availability creation locks the mentor account to serialize overlap checks.
-
-Dates are stored as UTC and displayed in local time. Skill matching weights critical/required/preferred skills 3/2/1; matching requires sufficient proficiency. Missing critical skills prevent application submission.
-
-## Current limits
-
-The first implementation uses JavaScript rather than TypeScript. Mentors can register directly; admin approval, archival, booking cancellation, private journals, structured milestones, password recovery, pagination beyond the most recent 100 journal entries, and session-note editing remain future work. The session_notes collection is initialized but has no interface yet. No sample companies or fake opportunities are inserted.
-
-Unit tests do not replace live integration testing against both databases. For a manual end-to-end check, create admin, student, and mentor accounts; publish an internship; set student skills; apply and shortlist; request and accept mentorship; create and book availability; add a journal entry. Attempt duplicate applications, duplicate booking, unauthorized journal reads, and overlapping slots.
-
-For production, configure HTTPS, a least-privilege database account, database backups, and a stable supported Node.js release. Secure cookies require HTTPS when NODE_ENV=production.
+Integration tests use the databases configured in `.env`, so point them at a local development database.
