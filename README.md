@@ -23,9 +23,6 @@ Open http://127.0.0.1:3001. Three fictional demo accounts are seeded: `student@s
 
 Use `npm run dev` for development at http://127.0.0.1:5173. Keep `APP_ORIGIN` in `.env` aligned with the address in use. Do not expose this local app to a public network.
 
-## Presentation walkthrough
-
-The suggested 7 minute demo is in [docs/PRESENTATION.md](docs/PRESENTATION.md). The ER model, data dictionary, database operations and example queries are in [docs/DATABASE_DESIGN.md](docs/DATABASE_DESIGN.md). [docs/MOVING.md](docs/MOVING.md) explains how to move just the app or transfer both databases.
 
 ## Data model
 
@@ -45,4 +42,4 @@ The local `.env` file holds credentials and is excluded by Git. The sample datab
 - `npm test` — matching and workflow unit checks
 - `npm run test:integration` — exercise the API and remove temporary test records
 
-Integration tests use the databases configured in `.env`, so point them at a local development database.
+
