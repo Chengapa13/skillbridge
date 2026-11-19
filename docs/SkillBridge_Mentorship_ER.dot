@@ -1,0 +1,23 @@
+digraph SkillBridgeMentorship {
+ graph [label="SKILLBRIDGE  |  MENTORSHIP & CROSS-DATABASE RELATIONSHIPS",labelloc=t,
+ fontname="DejaVu Sans", fontsize=22, fontcolor="#1f3346", rankdir=LR,
+ nodesep=0.55, ranksep=0.9, splines=polyline, pad=0.45, bgcolor="white"];
+ node [shape=box,style="rounded,filled",color="#2c7e87",penwidth=1.6,
+ fillcolor="#eaf6f5",fontcolor="#163a4a",fontname="DejaVu Sans",fontsize=13,margin="0.21,0.16"];
+ edge [color="#71869b",penwidth=1.4,arrowsize=0.75,fontname="DejaVu Sans",fontsize=9,fontcolor="#536a80"];
+ users [label="USERS\nPK id | role"];
+ mentorships [label="MENTORSHIPS\nPK id | FK student_id, mentor_id\nUQ (student_id, mentor_id)\nstatus"];
+ mentor_slots [label="MENTOR_SLOTS\nPK id | FK mentor_id\nstarts_at, ends_at"];
+ mentorship_sessions [label="MENTORSHIP_SESSIONS\nPK id | FK mentorship_id, slot_id\nstatus, feedback_rating\nUQ generated active_slot_id"];
+ journal_entries [label="MONGO: JOURNAL_ENTRIES\n_id | relationship_id | author_id\nbody, tasks, created_at",shape=box,style="rounded,filled",fillcolor="#f4edff",color="#8c66bb"];
+ session_notes [label="MONGO: SESSION_NOTES\n_id | session_id | relationship_id\nauthor_id, body, tasks, created_at",shape=box,style="rounded,filled",fillcolor="#f4edff",color="#8c66bb"];
+ users -> mentorships [label="1 : N\nstudent AND mentor"];
+ users -> mentor_slots [label="1 : N\nmentor"];
+ mentorships -> mentorship_sessions [label="1 : N"];
+ mentor_slots -> mentorship_sessions [label="1 : N over time\n0..1 active booking"];
+ mentorships -> journal_entries [style=dashed,color="#8c66bb",label="logical link"];
+ mentorships -> session_notes [style=dashed,color="#8c66bb",label="logical link"];
+ mentorship_sessions -> session_notes [style=dashed,color="#8c66bb",label="logical link"];
+ users -> journal_entries [style=dashed,color="#8c66bb",label="author_id"];
+ users -> session_notes [style=dashed,color="#8c66bb",label="author_id"];
+}

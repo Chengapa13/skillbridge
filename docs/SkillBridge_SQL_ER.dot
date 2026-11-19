@@ -1,0 +1,29 @@
+digraph SkillBridgeSQL {
+ graph [label="SKILLBRIDGE  |  SQL ENTITY RELATIONSHIPS (APPLICATION & AUTH)", labelloc=t,
+ fontname="DejaVu Sans", fontsize=22, fontcolor="#1f3346", rankdir=LR,
+ nodesep=0.6, ranksep=0.9, splines=polyline, pad=0.4, bgcolor="white"];
+ node [shape=box, style="rounded,filled", color="#2c7e87", penwidth=1.6,
+ fillcolor="#eaf6f5", fontcolor="#163a4a", fontname="DejaVu Sans", fontsize=13, margin="0.2,0.14"];
+ edge [color="#71869b", penwidth=1.4, arrowsize=0.75, fontname="DejaVu Sans", fontsize=9, fontcolor="#536a80"];
+ users [label="USERS\nPK id | UQ email\nname, role, approved, password_hash"];
+ profiles [label="PROFILES\nPK/FK user_id\nbio, organization", fillcolor="#f2f6ff",color="#6479b7"];
+ auth_sessions [label="AUTH_SESSIONS\nPK token_hash | FK user_id\nexpires_at", fillcolor="#f2f6ff",color="#6479b7"];
+ skills [label="SKILLS\nPK id | UQ name"];
+ user_skills [label="USER_SKILLS\nPK/FK user_id + skill_id\nlevel (1..4)", fillcolor="#f2f6ff",color="#6479b7"];
+ companies [label="COMPANIES\nPK id | UQ name"];
+ internships [label="INTERNSHIPS\nPK id | FK company_id\ntitle, deadline, stipend, is_active"];
+ internship_skills [label="INTERNSHIP_SKILLS\nPK/FK internship_id + skill_id\nimportance, min_level", fillcolor="#f2f6ff",color="#6479b7"];
+ applications [label="APPLICATIONS\nPK id | FK student_id, internship_id\nUQ (student_id, internship_id)\nstatus", fillcolor="#fff4e8",color="#bd8241"];
+ application_status_history [label="APPLICATION_STATUS_HISTORY\nPK id | FK application_id, actor_id\nstatus, created_at", fillcolor="#fff4e8",color="#bd8241"];
+ users -> profiles [label="1 : 0..1"];
+ users -> auth_sessions [label="1 : N"];
+ users -> user_skills [label="1 : N"];
+ skills -> user_skills [label="1 : N"];
+ companies -> internships [label="1 : N"];
+ internships -> internship_skills [label="1 : N"];
+ skills -> internship_skills [label="1 : N"];
+ users -> applications [label="1 : N\nstudent"];
+ internships -> applications [label="1 : N"];
+ applications -> application_status_history [label="1 : N"];
+ users -> application_status_history [label="1 : N\nactor"];
+}

@@ -4,22 +4,29 @@ SkillBridge uses MySQL for structured relationships and reliable transactions, a
 
 ## ER diagram
 
+The current diagram below includes all application SQL relationships. Additional standalone tables are `schema_migrations` (setup bookkeeping) and `demo_seed_records` (created by the seed script). The downloadable PDF in this folder contains the full column-level relational schema, NoSQL collection model, and cross-database relationship notes.
+
 ```mermaid
 erDiagram
   USERS ||--o| PROFILES : has
-  USERS ||--o{ USER_SKILLS : develops
-  SKILLS ||--o{ USER_SKILLS : describes
+  USERS ||--o{ AUTH_SESSIONS : authenticates
+  USERS ||--o{ USER_SKILLS : owns
+  SKILLS ||--o{ USER_SKILLS : categorizes
   COMPANIES ||--o{ INTERNSHIPS : posts
   INTERNSHIPS ||--o{ INTERNSHIP_SKILLS : requires
-  SKILLS ||--o{ INTERNSHIP_SKILLS : qualifies
-  USERS ||--o{ APPLICATIONS : submits
+  SKILLS ||--o{ INTERNSHIP_SKILLS : measures
+  USERS ||--o{ APPLICATIONS : applies
   INTERNSHIPS ||--o{ APPLICATIONS : receives
   APPLICATIONS ||--o{ APPLICATION_STATUS_HISTORY : records
-  USERS ||--o{ MENTORSHIPS : connects
-  MENTORSHIPS ||--o{ MENTORSHIP_SESSIONS : schedules
-  MENTOR_SLOTS ||--o| MENTORSHIP_SESSIONS : reserved_for
+  USERS ||--o{ APPLICATION_STATUS_HISTORY : changes
+  USERS ||--o{ MENTORSHIPS : student
+  USERS ||--o{ MENTORSHIPS : mentor
+  USERS ||--o{ MENTOR_SLOTS : offers
+  MENTORSHIPS ||--o{ MENTORSHIP_SESSIONS : includes
+  MENTOR_SLOTS ||--o{ MENTORSHIP_SESSIONS : reserves
 ```
 
+The final schema is the combination of `db/schema.sql`, `server/migrate.js`, and the optional seed-only `demo_seed_records` table in `server/seed.js`. The seed table is not essential for normal application operation.
 MongoDB records reference the matching MySQL mentorship or session ID. The API verifies that the current user is a participant before reading or changing these documents.
 
 ## Relational data dictionary
