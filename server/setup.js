@@ -11,7 +11,11 @@ await migrate(c);
 for(const skill of ['SQL','Python','JavaScript','React','Git','Communication']) await c.execute('INSERT IGNORE INTO skills(name) VALUES(?)',[skill]);
 await mongoClient.connect();
 for(const collection of ['journal_entries','session_notes']) {
- const validator={$jsonSchema:{bsonType:'object',required:['relationship_id','author_id','body','created_at'],properties:{relationship_id:{bsonType:'int'},author_id:{bsonType:'int'},body:{bsonType:'string',maxLength:10000},created_at:{bsonType:'date'}}}};
+  // Session notes must have a valid SQL session reference, not just a mentorship reference.
+ const required=['relationship_id','author_id','body','created_at'];
+ const properties={relationship_id:{bsonType:'int'},author_id:{bsonType:'int'},body:{bsonType:'string',maxLength:10000},created_at:{bsonType:'date'}};
+ if(collection==='session_notes') {required.push('session_id');properties.session_id={bsonType:'int'};}
+ const validator={$jsonSchema:{bsonType:'object',required,properties}};
  if(!(await mongo.listCollections({name:collection}).toArray()).length)await mongo.createCollection(collection,{validator});
  else await mongo.command({collMod:collection,validator});
  await mongo.collection(collection).createIndex({relationship_id:1,created_at:-1});

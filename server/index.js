@@ -12,7 +12,18 @@ import {scoreSkills,canTransition} from './domain.js';
 const app=express();
 app.use(helmet({contentSecurityPolicy:process.env.NODE_ENV==='production'?undefined:false}),express.json({limit:'100kb'}),cookieParser());
 app.use('/api',rateLimit({windowMs:60000,limit:150}));
-app.use('/api',(req,res,next)=>{if(!['GET','HEAD','OPTIONS'].includes(req.method)&&req.get('origin')!==process.env.APP_ORIGIN)return res.status(403).json({error:'Invalid request origin'});next();});
+// Permit the configured development origin and this local production server.
+// Keep the origin check on all state-changing API requests.
+const allowedApiOrigins = new Set([
+  process.env.APP_ORIGIN,
+  `http://127.0.0.1:${Number(process.env.PORT || 3001)}`
+].filter(Boolean));
+app.use('/api',(req,res,next)=>{
+  if (!['GET','HEAD','OPTIONS'].includes(req.method) && !allowedApiOrigins.has(req.get('origin'))) {
+    return res.status(403).json({error:'Invalid request origin'});
+  }
+  next();
+});
 const fail=(status,message)=>{throw Object.assign(new Error(message),{status});};
 const hash=t=>createHash('sha256').update(t).digest('hex');
 const id=v=>z.coerce.number().int().positive().parse(v);
